@@ -1,35 +1,42 @@
-#include <cstring>
+#include "shell.hpp"
 #include <iostream>
-#include <ostream>
 #include <sstream>
 #include <string>
 #include <vector>
 
+#define RESET "\033[0m"
+#define YELLOW "\033[33m"
+
 int main() {
-
   while (true) {
-    std::cout << "rash>" << std::flush;
+    std::cout << YELLOW << "rash> " << RESET << std::flush;
 
-    std::vector<std::string> testing;
+    std::string inputString;
+    std::getline(std::cin, inputString);
 
-    std::string testString;
-
-    std::getline(std::cin, testString);
-
-    if (std::cin.eof()) {
-      break;
-    }
-    if (testString == "exit") {
+    if (std::cin.eof() || inputString == "exit") {
       break;
     }
 
-    std::istringstream stream(testString);
-
-    std::string wort;
-
-    while (stream >> wort) {
-      std::cout << wort << '\n';
+    if (inputString.empty()) {
+      continue;
     }
+
+    std::istringstream stream(inputString);
+    std::string word;
+
+    std::vector<std::string> currentInput;
+
+    while (stream >> word) {
+      currentInput.push_back(word);
+    }
+
+    if (currentInput.empty()) {
+      continue;
+    }
+
+    Shell shell(currentInput);
+    shell.run();
   }
 
   return 0;

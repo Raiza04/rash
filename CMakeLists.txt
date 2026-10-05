@@ -13,6 +13,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(SOURCES
     src/main.cpp
     src/shell.cpp
+    src/builtin.cpp
 )
 
 # Das ausführbare Programm (Executable) definieren
