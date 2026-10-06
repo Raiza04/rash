@@ -4,8 +4,7 @@
 #include <cstdlib>
 
 void Shell::run() {
-  BuildIn builtin(input);
-  if (builtin.execute()) {
+  if (BuiltIn::check_and_execute(input)) {
     return;
   }
 

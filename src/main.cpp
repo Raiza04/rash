@@ -14,7 +14,7 @@ int main() {
     std::string inputString;
     std::getline(std::cin, inputString);
 
-    if (std::cin.eof() || inputString == "exit") {
+    if (std::cin.eof()) {
       break;
     }
 
