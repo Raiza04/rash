@@ -1,4 +1,5 @@
 #include "builtin.hpp"
+#include "redirect.hpp"
 #include <cstdlib>
 #include <filesystem>
 #include <iostream>
@@ -7,6 +8,7 @@
 #include <stdlib.h>
 #include <string>
 #include <system_error>
+#include <unistd.h>
 #include <unordered_map>
 
 namespace fs = std::filesystem;
@@ -24,15 +26,31 @@ std::unordered_map<std::string, std::unique_ptr<BuiltIn>> &initMap() {
   return map;
 }
 
-bool BuiltIn::check_and_execute(const std::vector<std::string> &input) {
+bool BuiltIn::check_and_execute(std::vector<std::string> &input) {
   if (input.empty())
     return false;
 
   auto &builtIn_commands = initMap();
-
   auto it = builtIn_commands.find(input[0]);
+
   if (it != builtIn_commands.end()) {
+
+    int saved_stdin = dup(0);
+    int saved_stdout = dup(1);
+    int saved_stderr = dup(2);
+
+    Redirect::check_and_redirect(input);
+
     it->second->execute(input);
+
+    dup2(saved_stdin, 0);
+    dup2(saved_stdout, 1);
+    dup2(saved_stderr, 2);
+
+    close(saved_stdin);
+    close(saved_stdout);
+    close(saved_stderr);
+
     return true;
   }
   return false;

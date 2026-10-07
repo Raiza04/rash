@@ -13,7 +13,7 @@ public:
   BuiltIn() = default;
   virtual ~BuiltIn() = default;
 
-  static bool check_and_execute(const std::vector<std::string> &input);
+  static bool check_and_execute(std::vector<std::string> &input);
 
 protected:
   virtual void execute(const std::vector<std::string> &input) = 0;

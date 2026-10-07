@@ -14,6 +14,7 @@ set(SOURCES
     src/main.cpp
     src/shell.cpp
     src/builtin.cpp
+    src/redirect.cpp
 )
 
 # Das ausführbare Programm (Executable) definieren
