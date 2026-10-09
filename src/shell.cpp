@@ -1,11 +1,18 @@
 #include "shell.hpp"
 #include "builtin.hpp"
+#include "pipe.hpp"
 #include "redirect.hpp"
 #include <cstdio>
 #include <cstdlib>
+#include <string>
+#include <vector>
 
-void Shell::run() {
+void Shell::run(std::vector<std::string> &input) {
   if (BuiltIn::check_and_execute(input)) {
+    return;
+  }
+
+  if (Pipe::check_and_execute_pipe(input)) {
     return;
   }
 

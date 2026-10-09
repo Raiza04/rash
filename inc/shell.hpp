@@ -7,9 +7,8 @@
 
 class Shell {
 public:
-  Shell(std::vector<std::string> &inputStr) : input(inputStr) {};
-  void run();
+  Shell() = default;
+  ~Shell() = default;
 
-private:
-  std::vector<std::string> input;
+  static void run(std::vector<std::string> &input);
 };

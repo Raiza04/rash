@@ -6,7 +6,7 @@
 #define RESET "\033[0m"
 #define YELLOW "\033[33m"
 
-void parser(std::string &inputString, std::vector<std::string> &inputVector);
+void lexer(std::string &inputString, std::vector<std::string> &inputVector);
 
 int main() {
   while (true) {
@@ -25,24 +25,30 @@ int main() {
 
     std::vector<std::string> currentInput;
 
-    parser(inputString, currentInput);
+    lexer(inputString, currentInput);
 
     if (currentInput.empty()) {
       continue;
     }
 
-    Shell shell(currentInput);
-    shell.run();
+    Shell::run(currentInput);
   }
 
   return 0;
 }
 
-void parser(std::string &inputString, std::vector<std::string> &inputVector) {
+void lexer(std::string &inputString, std::vector<std::string> &inputVector) {
   bool in_escape = false;
   bool in_quotes = false;
 
   std::string buffer = "";
+
+  auto reset_buffer = [&buffer, &inputVector]() {
+    if (!buffer.empty()) {
+      inputVector.push_back(buffer);
+      buffer = "";
+    }
+  };
 
   for (size_t i = 0; i < inputString.length(); i++) {
     char c = inputString[i];
@@ -66,10 +72,8 @@ void parser(std::string &inputString, std::vector<std::string> &inputVector) {
     if (!in_quotes) {
       if (c == '2' || c == '&') {
         if (i + 1 < inputString.length() && inputString[i + 1] == '>') {
-          if (!buffer.empty()) {
-            inputVector.push_back(buffer);
-            buffer = "";
-          }
+          reset_buffer();
+
           if (c == '&') {
             inputVector.push_back("&>");
           } else {
@@ -80,45 +84,38 @@ void parser(std::string &inputString, std::vector<std::string> &inputVector) {
         }
 
       } else if (c == '<') {
-        if (!buffer.empty()) {
-          inputVector.push_back(buffer);
-          buffer = "";
-        }
+        reset_buffer();
 
         inputVector.push_back("<");
         continue;
 
       } else if (c == '>') {
         if (i + 1 < inputString.length() && inputString[i + 1] == '>') {
-          if (!buffer.empty()) {
-            inputVector.push_back(buffer);
-            buffer = "";
-          }
+          reset_buffer();
+
           inputVector.push_back(">>");
           i++;
           continue;
         } else {
-          if (!buffer.empty()) {
-            inputVector.push_back(buffer);
-            buffer = "";
-          }
+          reset_buffer();
+
           inputVector.push_back(">");
           continue;
         }
+      } else if (c == '|') {
+        reset_buffer();
+
+        inputVector.push_back("|");
+        continue;
       }
     }
 
     if (c == ' ' && !in_quotes) {
-      if (!buffer.empty()) {
-        inputVector.push_back(buffer);
-        buffer = "";
-      }
+      reset_buffer();
     } else {
       buffer += c;
     }
   }
 
-  if (!buffer.empty()) {
-    inputVector.push_back(buffer);
-  }
+  reset_buffer();
 }
