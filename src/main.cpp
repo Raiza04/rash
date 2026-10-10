@@ -1,5 +1,10 @@
+extern "C" {
+#include "linenoise.h"
+}
+
 #include "shell.hpp"
-#include <iostream>
+#include <cstddef>
+#include <cstdlib>
 #include <string>
 #include <vector>
 
@@ -9,29 +14,27 @@
 void lexer(std::string &inputString, std::vector<std::string> &inputVector);
 
 int main() {
-  while (true) {
-    std::cout << YELLOW << "rash> " << RESET << std::flush;
+  char *line;
 
-    std::string inputString;
-    std::getline(std::cin, inputString);
+  const char *prompt = YELLOW "rash> " RESET;
+  while ((line = linenoise(prompt)) != NULL) {
 
-    if (std::cin.eof()) {
-      break;
+    if (line[0] != '\0') {
+      linenoiseHistoryAdd(line);
+
+      std::string inputString(line);
+
+      std::vector<std::string> inputVector;
+      lexer(inputString, inputVector);
+
+      if (inputVector.empty()) {
+        continue;
+      }
+
+      Shell::run(inputVector);
     }
 
-    if (inputString.empty()) {
-      continue;
-    }
-
-    std::vector<std::string> currentInput;
-
-    lexer(inputString, currentInput);
-
-    if (currentInput.empty()) {
-      continue;
-    }
-
-    Shell::run(currentInput);
+    free(line);
   }
 
   return 0;

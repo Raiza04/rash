@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(Rash LANGUAGES CXX)
+project(Rash C CXX)
 
 # Zwingt CMake, die compile_commands.json für Neovim/clangd zu generieren
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -16,6 +16,7 @@ set(SOURCES
     src/builtin.cpp
     src/redirect.cpp
     src/pipe.cpp
+    src/linenoise.c
 )
 
 # Das ausführbare Programm (Executable) definieren
